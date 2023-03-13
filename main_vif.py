@@ -70,7 +70,7 @@ def training_model(args):
     train_gen = train_generator(os.path.join(DATASET_DIR,"train/"), train_set, batch_size)
     val_gen = train_generator(os.path.join(DATASET_DIR,"val/"), val_set, batch_size)
 
-    model_path = os.path.join(args.save_checkpoint_path,'model_weight.h5')
+    model_path = os.path.join(args.save_checkpoint_path,'model_weight2.h5')
 
     reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=15, min_lr=1e-15)
     early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=40)

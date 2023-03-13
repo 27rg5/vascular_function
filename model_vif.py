@@ -4,6 +4,7 @@ import tensorflow as tf
 from tensorflow import keras
 import tensorflow_addons as tfa
 from tensorflow.keras.layers import Conv3D, MaxPool3D, concatenate, Dropout, Lambda, UpSampling3D
+from math import floor
 
 X_DIM = 224
 Y_DIM = 296
@@ -90,38 +91,38 @@ def unet3d(img_size = (None, None, None),learning_rate = 1e-8,\
     input_img = tf.keras.layers.Input((img_size[0], img_size[1], img_size[2], nchannels))
 
     #encoder
-    conv1_1 = Conv3D(32, (11, 11, 11), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(input_img)
-    conv1_2 = Conv3D(32, (11, 11, 11), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv1_1)
+    conv1_1 = Conv3D(32, (floor(11/1.8286), floor(11/1.8286), 11*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(input_img)
+    conv1_2 = Conv3D(32, (floor(11/1.8286), floor(11/1.8286), 11*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv1_1)
     conv1_2 = tfa.layers.InstanceNormalization()(conv1_2)
     pool1 = MaxPool3D(pool_size=(2, 2, 2))(conv1_2)
 
-    conv2_1 = Conv3D(64, (7, 7, 7), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(pool1)
-    conv2_2 = Conv3D(64, (7, 7, 7), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv2_1)
+    conv2_1 = Conv3D(64, (floor(7/1.8286), floor(7/1.8286), 7*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(pool1)
+    conv2_2 = Conv3D(64, (floor(7/1.8286), floor(7/1.8286), 7*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv2_1)
     pool2 = MaxPool3D(pool_size=(2, 2, 2))(conv2_2)
 
-    conv3_1 = Conv3D(128, (7, 7, 7), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(pool2)
-    conv3_2 = Conv3D(128, (7, 7, 7), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv3_1)
+    conv3_1 = Conv3D(128, (floor(7/1.8286), floor(7/1.8286), 7*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(pool2)
+    conv3_2 = Conv3D(128, (floor(7/1.8286), floor(7/1.8286), 7*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv3_1)
     conv3_2 = tfa.layers.InstanceNormalization()(conv3_2)
     pool3 = MaxPool3D(pool_size=(2, 2, 2))(conv3_2)
 
     #botleneck
-    conv4_1 = Conv3D(256, (7, 7, 7), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(pool3)
-    conv4_2 = Conv3D(256, (7, 7, 7), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv4_1)
+    conv4_1 = Conv3D(256, (floor(7/1.8286), floor(7/1.8286), 7*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(pool3)
+    conv4_2 = Conv3D(256, (floor(7/1.8286), floor(7/1.8286), 7*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv4_1)
 
     #decoder
     up1_1 = concatenate([UpSampling3D(size=(2, 2, 2))(conv4_2), conv3_2],axis=-1)
-    conv5_1 = Conv3D(128, (7, 7, 7), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(up1_1)
-    conv5_2 = Conv3D(128, (7, 7, 7), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv5_1)
+    conv5_1 = Conv3D(128, (floor(7/1.8286), floor(7/1.8286), 7*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(up1_1)
+    conv5_2 = Conv3D(128, (floor(7/1.8286), floor(7/1.8286), 7*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv5_1)
     conv5_2 = tfa.layers.InstanceNormalization()(conv5_2)
 
     up2_1 = concatenate([UpSampling3D(size=(2, 2, 2))(conv5_2), conv2_2],axis=-1)
-    conv6_1 = Conv3D(64, (7, 7, 7), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(up2_1)
-    conv6_2 = Conv3D(64, (7, 7, 7), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv6_1)
+    conv6_1 = Conv3D(64, (floor(7/1.8286), floor(7/1.8286), 7*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(up2_1)
+    conv6_2 = Conv3D(64, (floor(7/1.8286), floor(7/1.8286), 7*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv6_1)
 
     up3_1 = concatenate([UpSampling3D(size=(2, 2, 2))(conv6_2), conv1_2],axis=-1)
     up3_1 = Dropout(dropout)(up3_1)
-    conv7_1 = Conv3D(32, (11, 11, 11), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(up3_1)
-    conv7_2 = Conv3D(32, (11, 11, 11), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv7_1)
+    conv7_1 = Conv3D(32, (floor(11/1.8286), floor(11/1.8286), 11*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(up3_1)
+    conv7_2 = Conv3D(32, (floor(11/1.8286), floor(11/1.8286), 11*5), activation=keras.layers.LeakyReLU(alpha=0.3), padding='same')(conv7_1)
     conv7_2 = tfa.layers.InstanceNormalization()(conv7_2)
 
     conv8 = Conv3D(1, (1, 1, 1), activation='sigmoid')(conv7_2)
